@@ -33,7 +33,7 @@ I haven't done it here since I thought of creating the tests that will simulate 
 Handling the crash
 I think in this implementation no handling is necessary. We are storing only the counter 0-100000 in the persistent storage.
 Each time get_id returns an id we guaranteed that the next counter is stored in the file. So worst case a counter value can be
-not used due to a crash. I a node restarts it can continue using the same counter and by allocating more bits for the counter
+not used due to a crash. If a node restarts it can continue using the same counter and by allocating more bits for the counter
 we have 8 times more numbers than we should need to supoort 100K calls per second
 
 Tests
@@ -42,5 +42,8 @@ another creates all processes and they will be waiting to start calling get_id u
 There could be other variants of this test : spacing get_id calls evenly , or giving bursts of get_id calls would be useful
 Also for the production code the communications should be tested - ie the time it will take to establish and tear down connections,
 or sending a UDP packet if it will be used.
+
 Another test that makes sense to compose is probably to test uniqueness of the generated id.
 Could probably use bloom filter or just store the values in a DB.
+
+One more: simulate creating several nodes and call get_id on all of them. Test validity and consistency of results.
