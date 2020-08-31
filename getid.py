@@ -12,37 +12,6 @@ glock = Lock()
 #used to simulate node_id
 global_id =0
 '''
-Basically the best and simplest solution to the question would be to ues SQL to generate unigue id
-It can be achieved with CREATE TABLE idtable ( ID INT IDENTITY( @node_id,1024) NOT NULL PRIMARY KEY )
-ie generate Ids for the table starting with node_id and using increment of number of nodes. 
-However below is my attempt on it without using SQL, simply by storing a counter in a memory mapped file
-and appending node id and counter to the timestampe  
-    
-get_id :
-Use timestamp, node ID and counter to create a unique ID:
-Algorithm should be:
-1. Round timestamp to the number of seconds
-2. Shift it 30 bits left 
-3. Append node ID ( 10 bits to store 0-1023 number)
-4. Append counter ( we need 17 bits to store 100K counter, so 20 bits should be enough)
-Explanation:
-Timestamp will change every second. Node id is uinque per node, and counter is guaranteed to advance 
-with every call and can be more than maximum requests per second we should support.
-In plain C it should be this:
-uint64_t ts = timestamp();
-uint64_t nodeId = node_id();
-uint64_t counter = get_counter();
-uint64_t id = (ts<<30)|((nodeId& 0x3ff)<<20)|(counter& 0xfffff)
-
-It is difficult to create integer of a specific size in Python
-ctype helper methods used in the code show one example how it can be done through the call
-to ctype, but int type in Python does not have a size limit.
-A better approach would be to writ e a method in a plain C as mentioned above and call it from Python  
-Not doing it here due to the time constraints
-So the below implementation is an approximation of the algorithm described. Sorry...
-
-Note also that it makes sense to define all the variables as class variables here, but 
-I haven't done it here since I thought of creating the tests that will simulate creating all the objects locally 
 '''
 class GlobalId:
 
